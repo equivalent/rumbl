@@ -12,8 +12,8 @@ config :logger, level: :warn
 # Configure your database
 config :rumbl, Rumbl.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "rumbl",
+  password: "20878fd5d5b9cb2d92b7be0a7e857e6c",
   database: "rumbl_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
