@@ -18,3 +18,10 @@ ALTER USER rumbl WITH SUPERUSER;
 mix ecto.create
 mix ecto.migrate
 ```
+
+
+## ecto
+
+```
+mix ecto.gen.migration create_user
+```
