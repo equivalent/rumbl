@@ -192,6 +192,9 @@ user.videos
 query = Ecto.assoc(user, :videos)
 Repo.all(query)
 
+Repo.all(Ecto.assoc(user, :videos))       # all videos of a user
+Repo.get!(Ecto.assoc(user, :videos), 123) # video of a user with ID
+
 
 # therefore in controller we can do this:
 defmodule Rumbl.VideoController do
