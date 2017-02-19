@@ -193,6 +193,19 @@ query = Ecto.assoc(user, :videos)
 Repo.all(query)
 
 
+# therefore in controller we can do this:
+defmodule Rumbl.VideoController do
+  use Rumbl.Web, :controller
+  alias Rumbl.Video
 
+  def new(conn, _params) do
+    changeset =
+      conn.assigns.current_user
+      |> build_assoc(:videos)
+      |> Video.changeset()
+    render(conn, "new.html", changeset: changeset)
+  end
+  # ...
+end
 
 ```
