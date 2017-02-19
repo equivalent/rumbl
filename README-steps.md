@@ -160,3 +160,39 @@ mix phoenix.gen.html Video videos user_id:references:users url:string title:stri
 mix ecto.migrate
 mix ecto.rollback
 ```
+
+
+## Relationships
+
+`iex -S mix`
+
+```ex
+alias Rumbl.Repo
+alias Rumbl.User
+import Ecto.Query
+
+user = Repo.get_by!(User, username: "josevalim")
+user.videos
+# > #Ecto.Association.NotLoaded<association :videos is not loaded>
+user = Repo.preload(user, :videos)
+user.videos
+# > []
+
+# add
+attrs = %{title: "hi", description: "says hi", url: "example.com"}
+video = Ecto.build_assoc(user, :videos, attrs)
+video = Repo.insert!(video)
+
+# retriew newly added
+user = Repo.get_by!(User, username: "josevalim")
+user = Repo.preload(user, :videos) 
+user.videos
+
+# alternative way
+query = Ecto.assoc(user, :videos)
+Repo.all(query)
+
+
+
+
+```
