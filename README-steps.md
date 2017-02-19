@@ -212,3 +212,38 @@ defmodule Rumbl.VideoController do
 end
 
 ```
+
+
+
+## ecto queries and constraints
+
+```
+mix phoenix.gen.model Category categories name:string
+mix ecto.gen.migration add_category_id_to_video
+
+mix run priv/repo/seeds.exs
+```
+
+```ex
+Repo.all from c in Category, select: c.name
+# SELECT c0."name" FROM "categories" AS c0 []
+# => ["Action", "Drama", "Romance", "Comedy", "Sci-fi"]
+
+Repo.all from c in Category, select: c.name, order_by: name
+# SELECT c0."name" FROM "categories" AS c0 ORDER BY c0."name" []
+# => ["Action", "Comedy", "Drama", "Romance", "Sci-fi"]
+
+
+query = Category
+query = from c in query, order_by: c.name
+query = from c in query, select: {c.name, c.id}
+Repo.all query
+# SELECT c0."name", c0."id" FROM "categories" AS c0 ORDER BY c0."name" []
+# => [{"Action", 1}, {"Comedy", 4}, {"Drama", 2}, {"Romance", 3}, {"Sci-fi", 5}]
+
+```
+```
+
+
+
+```
