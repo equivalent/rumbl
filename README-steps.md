@@ -242,8 +242,34 @@ Repo.all query
 # => [{"Action", 1}, {"Comedy", 4}, {"Drama", 2}, {"Romance", 3}, {"Sci-fi", 5}]
 
 ```
+
+```ex
+import Ecto.Query
+alias Rumbl.Repo
+alias Rumbl.User
+
+username = 123
+Repo.all(from u in User, where: u.username == ^username)
+```
+
+* Comparison operators: == , != , <= , >= , < , >
+* Boolean operators: `and` , `or` , `not`
+* Inclusion operator: `in`
+* Search functions: `like` and `ilike`
+* Null check functions: `is_nil`
+* Aggregates: `count` , `avg` , `sum` , `min` , `max`
+* Date/time intervals: `datetime_add` , `date_add`
+* General: `fragment` , `field` , and `type`
+
+
+```ex
+Repo.one(from u in User, select: count(u.id), where: ilike(u.username,^"j%") or ilike(u.username, ^"c%"))
+# SELECT count(u0."id") FROM "users" AS u0 WHERE ((u0."username" ILIKE $1) OR (u0."username" ILIKE $2)) ["j%", "c%"]
+
+
+users_count = from u in User, select: count(u.id)
+j_users = from u in users_count, where: ilike(u.username, ^"%j%")
+Repo.all(j_users)
 ```
 
 
-
-```
