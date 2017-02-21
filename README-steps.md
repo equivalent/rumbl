@@ -272,4 +272,115 @@ j_users = from u in users_count, where: ilike(u.username, ^"%j%")
 Repo.all(j_users)
 ```
 
+### using pipe operator
 
+```ex
+User |> select([u], count(u.id)) |> where([u], ilike(u.username, ^"j%") or ilike(u.username, ^"c%")) |> Repo.one
+# SELECT count(u0."id") FROM "users" AS u0 WHERE ((u0."username" ILIKE $1) OR (u0."username" ILIKE $2)) ["j%", "c%"]
+1
+```
+
+### fragmests
+
+```ex
+from(u in User, where: fragment("lower(username) = ?", ^String.downcase(uname)))
+
+```
+
+### Direct sql execution
+
+```ex
+Ecto.Adapters.SQL.query(Rumbl.Repo, "SELECT power($1, $2)", [2, 10])
+```
+
+### preload association in same step 
+
+similar to preload example above
+
+```ex
+user = Repo.one from(u in User, limit: 1, preload: [:videos])
+
+```
+
+
+```ex
+Repo.all from u in User,
+    join: v in assoc(u, :videos),
+    join: c in assoc(v, :category),
+   where: c.name == "Comedy",
+  select: {u, v}
+
+# > [{%Rumbl.User{...}, %Rumbl.Video{...}}]
+```
+
+
+```ex
+alias Rumbl.Category
+alias Rumbl.Video
+alias Rumbl.Repo
+import Ecto.Query
+category = Repo.get_by Category, name: "Drama"
+# SELECT c0."id", c0."name", c0."inserted_at", c0."updated_at" FROM "categories" AS c0 WHERE (c0."name" = $1) ["Drama"]
+# %Rumbl.Category{__meta__: #Ecto.Schema.Metadata<:loaded, "categories">, id: 2,
+#   inserted_at: ~N[2017-02-19 20:05:54.008550], name: "Drama",
+#   updated_at: ~N[2017-02-19 20:05:54.008556]}
+
+video = Repo.one(from v in Video, limit: 1)
+# SELECT v0."id", v0."url", v0."title", v0."description", v0."user_id", v0."category_id", v0."inserted_at", v0."updated_at" FROM "videos" AS v0 LIMIT 1 []
+# %Rumbl.Video{__meta__: #Ecto.Schema.Metadata<:loaded, "videos">,
+#   category: #Ecto.Association.NotLoaded<association :category is not loaded>,
+#   category_id: nil, description: "says hi", id: 1,
+#   inserted_at: ~N[2017-02-19 16:41:28.198196], title: "hi",
+#   updated_at: ~N[2017-02-19 16:41:28.208806], url: "example.com",
+#   user: #Ecto.Association.NotLoaded<association :user is not loaded>, user_id: 1}
+changeset = Video.changeset(video, %{category_id: category.id})
+#Ecto.Changeset<action: nil, changes: %{category_id: 2}, errors: [], data: #Rumbl.Video<>, valid?: true>
+Repo.update(changeset)
+#   [debug] QUERY OK db=0.7ms queue=0.2ms
+#   begin []
+#   [debug] QUERY OK db=3.7ms
+#   UPDATE "videos" SET "category_id" = $1, "updated_at" = $2 WHERE "id" = $3 [2, {{2017, 2, 21}, {19, 39, 44, 929090}}, 1]
+#   [debug] QUERY OK db=3.3ms
+#   commit []
+# {:ok,
+#   %Rumbl.Video{__meta__: #Ecto.Schema.Metadata<:loaded, "videos">,
+#     category: #Ecto.Association.NotLoaded<association :category is not loaded>,
+#     category_id: 2, description: "says hi", id: 1,
+#     inserted_at: ~N[2017-02-19 16:41:28.198196], title: "hi",
+#     updated_at: ~N[2017-02-21 19:39:44.929090], url: "example.com",
+#     user: #Ecto.Association.NotLoaded<association :user is not loaded>,
+#     user_id: 1}}
+changeset = Video.changeset(video, %{category_id: 12345})
+# #Ecto.Changeset<action: nil, changes: %{category_id: 12345}, errors: [],
+#   data: #Rumbl.Video<>, valid?: true>
+# iex(10)> Repo.update(changeset)
+#   [debug] QUERY OK db=0.7ms queue=0.2ms
+#   begin []
+#   [debug] QUERY ERROR db=12.8ms
+#   UPDATE "videos" SET "category_id" = $1, "updated_at" = $2 WHERE "id" = $3 [12345, {{2017, 2, 21}, {19, 40, 2, 386567}}, 1]
+#   [debug] QUERY OK db=0.3ms
+#   rollback []
+# {:error,
+# #Ecto.Changeset<action: :update, changes: %{category_id: 12345},
+# errors: [category: {"does not exist", []}], data: #Rumbl.Video<>,
+#         valid?: false>}
+{:error, changeset} = v(-1)  # get the previous value
+# {:error,
+#  #Ecto.Changeset<action: :update, changes: %{category_id: 12345},
+#   errors: [category: {"does not exist", []}], data: #Rumbl.Video<>,
+#   valid?: false>}
+changeset.errors
+# [category: {"does not exist", []}]
+```
+
+
+
+### delece constraint
+
+```ex
+import Ecto.Changeset
+changeset = Ecto.Changeset.change(category)
+changeset = foreign_key_constraint(changeset, :videos, name: :videos_category_id_fkey, message: "still exist")
+Repo.delete changeset
+
+```
