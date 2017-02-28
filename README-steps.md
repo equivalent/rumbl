@@ -384,3 +384,9 @@ changeset = foreign_key_constraint(changeset, :videos, name: :videos_category_id
 Repo.delete changeset
 
 ```
+
+###  taged test run
+
+```
+$ mix test test/controllers --only login_as
+```
