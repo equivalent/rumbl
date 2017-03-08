@@ -390,3 +390,10 @@ Repo.delete changeset
 ```
 $ mix test test/controllers --only login_as
 ```
+
+
+### generate annotation model
+
+```
+mix phoenix.gen.model Annotation annotations body:text at:integer user_id:references:users video_id:references:videos
+```
