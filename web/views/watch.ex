@@ -1,4 +1,4 @@
-defmodule WatchView do
+defmodule Rumbl.WatchView do
   use Rumbl.Web, :view
 
   def player_id(video) do
