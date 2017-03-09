@@ -397,3 +397,25 @@ $ mix test test/controllers --only login_as
 ```
 mix phoenix.gen.model Annotation annotations body:text at:integer user_id:references:users video_id:references:videos
 ```
+
+### basic OTP
+
+```
+alias Rumbl.Counter
+
+{:ok, counter} = Counter.start_link(0)
+# => {:ok, #PID<0.276.0>}
+
+Counter.inc(counter)
+Counter.inc(counter)
+Counter.inc(counter)
+Counter.dec(counter)
+
+Counter.val(counter)
+# => 2
+
+Counter.dec(counter)
+Counter.val(counter)
+# => 1
+```
+
