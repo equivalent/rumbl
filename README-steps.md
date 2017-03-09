@@ -437,4 +437,48 @@ Counter.val
 # => 9
 ```
 
+### basic OTP supervision
+
+```
+# lib/rumbl.ex
+
+# ...
+    children = [
+      # Start the Ecto repository
+      supervisor(Rumbl.Repo, []),
+      # Start the endpoint when the application starts
+      supervisor(Rumbl.Endpoint, []),
+      # Start your own worker by calling: Rumbl.Worker.start_link(arg1, arg2, arg3)
+      # worker(Rumbl.Worker, [arg1, arg2, arg3]),
+      worker(Rumbl.Counter, [5], restart: :temporary, id: 1),
+      worker(Rumbl.Counter, [5], restart: :permanent, id: 2),
+      worker(Rumbl.Counter, [5], restart: :permanent, id: 3, max_restarts: 1, max_seconds: 12 ),
+    ]
+
+# ...
+```
+
+* `:permanent` - The child is always restarted (default).
+* `:temporary` - The child is never restarted.
+* `:transient` - The child is restarted only if it terminates abnormally, with an exit reason other than `:normal` , `:shutdown` , or `{:shutdown, term}`.
+
+OTP will only restart an application `max_restarts` times in `max_seconds` before
+failing and reporting the error up the supervision tree. By default, Elixir will
+allow 3 restarts in 5 seconds, but you can configure these values to whatever
+you want. In general, you’ll use the restart strategies your specific application
+requires.
+
+
+supervizor strategies: 
+
+* `:one_for_one` - If a child terminates, a supervisor restarts only that process.
+* `:one_for_all` - If a child terminates, a supervisor terminates all children and then restarts
+all children.
+* `:rest_for_one` - If a child terminates, a supervisor terminates all child processes defined
+after the one that dies. Then the supervisor restarts all terminated pro-
+cesses.
+* `:simple_one_for_one` - Similar to :one_for_one but used when a supervisor needs to dynamically
+supervise processes. For example, a web server would use it to supervise
+web requests, which may be 10, 1,000, or 100,000 concurrently running
+processes.
 
