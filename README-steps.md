@@ -520,4 +520,39 @@ stop MyAgent
 # => :ok
 ```
 
+### Monitor spawn process
+
+```
+pid = spawn(fn -> :ok end)
+# => #PID<0.530.0>
+Process.monitor(pid)
+# => #Reference<0.0.1.4941>
+flush()
+# {:DOWN, #Reference<0.0.1.4941>, :process, #PID<0.530.0>, :noproc}
+# => :ok
+
+```
+
+
+### Wolfram alfa 
+
+```
+Rumbl.InfoSys.compute("what is the meaning of life?")
+# => [%Rumbl.InfoSys.Result{backend: "wolfram", score: 95, text: "42\n(according to the book The Hitchhiker", url: nil}]
+
+# flush() # is empty now
+
+```
+
+
+### timeout
+
+```
+receive do
+  :this_will_never_arrive -> :ok
+after
+  1_000 -> :timedout
+end
+# => :timedout
+```
 
