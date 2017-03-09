@@ -400,6 +400,8 @@ mix phoenix.gen.model Annotation annotations body:text at:integer user_id:refere
 
 ### basic OTP
 
+on branch `08-basic-otp`
+
 ```
 alias Rumbl.Counter
 
@@ -418,4 +420,21 @@ Counter.dec(counter)
 Counter.val(counter)
 # => 1
 ```
+
+### basic GenServer
+
+on branch `09-basic-genserver`
+
+```
+alias Rumbl.Counter
+# => Rumbl.Counter
+{:ok, counter} = Counter.start_link(10)
+
+Counter.dec(counter)
+Counter.dec(counter)
+Counter.inc(counter)
+Counter.val
+# => 9
+```
+
 
