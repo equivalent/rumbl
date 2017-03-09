@@ -564,3 +564,9 @@ it it may end up 5 seconds
 ```
 mix run priv/repo/backend_seeds.ex
 ```
+
+### observer manager
+
+```
+:observer.start
+```
