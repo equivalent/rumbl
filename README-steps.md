@@ -482,3 +482,42 @@ supervise processes. For example, a web server would use it to supervise
 web requests, which may be 10, 1,000, or 100,000 concurrently running
 processes.
 
+
+### Agent
+
+Agent is simple GenServer OTP 
+
+PID agent :
+
+```
+import Agent
+
+{:ok, agent} = start_link fn -> 5 end
+
+update agent, &(&1 + 1)
+# => :ok
+get agent, &(&1)
+# => 6
+
+stop agent
+# => :ok
+```
+
+Named Agent:
+
+
+```
+import Agent
+
+{:ok, _agent} = start_link fn -> 5 end, name: MyAgent
+
+update MyAgent, &(&1 + 1)
+# => :ok
+get  MyAgent, &(&1)
+# => 6
+
+stop MyAgent
+# => :ok
+```
+
+
