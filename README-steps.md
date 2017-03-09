@@ -570,3 +570,14 @@ mix run priv/repo/backend_seeds.ex
 ```
 :observer.start
 ```
+
+### umbrella projects
+
+(outside rumbl application)
+
+```
+mix new rumbrella --umbrella
+cd apps
+mix new info_sys --sup
+cd info_sys
+```
