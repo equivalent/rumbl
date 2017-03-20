@@ -1,6 +1,9 @@
 # Rumbl
 
-This is fallow along application from Proramming Phoenix book
+Example from book: https://pragprog.com/book/phoenix/programming-phoenix
+
+Rumbrella app: https://github.com/equivalent/rumbrella 
+
 
 
 ## Settup postgres user
