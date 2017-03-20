@@ -4,6 +4,8 @@ Example from book: https://pragprog.com/book/phoenix/programming-phoenix
 
 Rumbrella app: https://github.com/equivalent/rumbrella 
 
+Steps: https://github.com/equivalent/rumbl/blob/master/README-steps.md
+
 
 
 ## Settup postgres user
